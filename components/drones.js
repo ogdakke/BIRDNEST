@@ -4,7 +4,7 @@ export default function GetDrones () {
     const [data, setData] = useState(null)
     const [isLoading, setLoading] = useState(false)
 
-
+    const result = []
 
     useEffect(() => {
         setLoading(true)
@@ -12,9 +12,11 @@ export default function GetDrones () {
             await fetch('/api/data')
             .then((res) => res.json())
             .then((data) => {
-                JSON.stringify(data)
+                
+                // JSON.stringify(data)
                 setData(data)
             })
+            
         }, 2000)
         setLoading(false)
         },[])
@@ -22,7 +24,6 @@ export default function GetDrones () {
         if (isLoading) return <p>Loading...</p>
         if (!data) return <p>No profile data</p>
         
-
         return (
         <div>
             <p>{JSON.stringify(data)}</p>
