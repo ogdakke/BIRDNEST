@@ -22,12 +22,12 @@ export default async function getData (req, res) {
   const radius = 100000
 
     // get data from url
-    await axios.get(url, {timeout: 5000})
+    await axios.get(url, {timeout: 8000})
     .then(response => {
       const newData = convert.xml2js(response.data, {compact: true, ignoreDeclaration: true})
-      
+    
     const getPilotData = async (serialNumber, distance) => {
-      // for testing a 404 response
+      // for testing a 404 response I used this random drone serialNumber since I haven't a clue about actually testing...
       // const pilotUrl = 'http://assignments.reaktor.com/birdnest/pilots/SN-TiMthtLkXJ'
 
       const pilotUrl = `http://assignments.reaktor.com/birdnest/pilots/${encodeURIComponent(serialNumber)}`
@@ -68,15 +68,19 @@ export default async function getData (req, res) {
                 return null
             }
         })
-    
+
+      //if all data is correctly parsed and received, promises are fulfilled and a response is sent to api' json. 
       Promise.all(pilotPromises)
         .then(droneData => {
           const finalData = droneData.filter(data => data !== null);
           return res.json(finalData)
         })
           .catch(error => {
-            errorHandler(error)
+            return errorHandler(error)
         })
+    })
+    .catch(error => {
+      return errorHandler(error)
     })
     // This function is called each time we catch an error.
     function errorHandler(error) {
@@ -90,7 +94,9 @@ export default async function getData (req, res) {
         } else if (error.request) {
           // The request was made but no response was received
           console.log(error.request);
-          return res.status(error.status).json(error.message)
+          // return res.status(error.status).json(error.message)
+        } else if (!error.response) {
+          return res.status(500).json(`500 internal error.`)
         } else {
           // Something happened in setting up the request that triggered an Error
           console.log('Error', error.message, error);
