@@ -12,7 +12,7 @@
   display: inherit;
   justify-content: inherit;
   align-items: inherit;
-  font-size: 0.85rem;
+  font-size: 1rem;
   max-width: var(--max-width);
   width: 100%;
   z-index: 2;
@@ -57,6 +57,7 @@
   background: rgba(var(--card-rgb), 0);
   border: 1px solid rgba(var(--card-border-rgb), 0.1);
   transition: background 200ms, border 200ms;
+  font-size: 0.9rem;
 }
 
 .card span {
@@ -72,7 +73,7 @@
 .card p {
   margin: 0;
   opacity: 0.6;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.5;
   max-width: 80ch;
 }
