@@ -1,5 +1,4 @@
 import axios from "axios";
-import { resolve } from "styled-jsx/css";
 
 export default async function getData (req, res) {
   const url = "http://assignments.reaktor.com/birdnest/drones"
