@@ -5,9 +5,10 @@ import { xml2js, xml2json } from "xml-js";
 export default async function getData (req, res) {
   const url = "http://assignments.reaktor.com/birdnest/drones"
   const convert = require('xml-js')
-  
 
-
+  const props =  {serialNumber: {_text: serialNumber},
+  positionY: {_text: positionY},
+  positionX: {_text: positionX}}
   //  check if point is inside the circle
   // circle_x, circle_y = origin of the circle
   // radius = radius of the circle
@@ -44,14 +45,15 @@ export default async function getData (req, res) {
         if (insideRadius(circle_x, circle_y, radius, x, y)) {
           async function getPilotData(serialNumber) {
             const pilotUrl = `http://assignments.reaktor.com/birdnest/pilots/${encodeURIComponent(serialNumber)}` // make the url based on the serialNumber and make sure that it does not break the url if serialNumber contains something funky
-             await axios.get(pilotUrl)
+             await axios.get(pilotUrl, {timeout: 4000})
             .then(function (response) {
+              console.log(response.status);
               let pilotData = response.data
               let serialData = {"drone":{serialNumber:{[serialNumber]: [pilotData]}}}
               
               finalData.push(serialData)              
               console.log(finalData);
-              
+              res.json(finalData)
               return finalData, serialData
             })
             .catch(function (error) {
@@ -60,11 +62,20 @@ export default async function getData (req, res) {
               return res.status(500).json({error: "error"})
             })
           }
-          return getPilotData(serialNumber)
+          getPilotData(serialNumber)
+          return
         } else {
-          finalData.push({drone :`${serialNumber} is not inside.`})
+          console.log(response.status);
+          if (response.status === 204) {
+            res.json({drone: "No new drone data."})
+          } else {
+            console.log(response.status);
+            finalData.push({drone :`${serialNumber} is not inside.`})
+            return
+          }
         }
       })
+
       console.log(finalData)
     })
     .catch(function (error) {
